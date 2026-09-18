@@ -65,6 +65,7 @@ export async function getPublishedSurvey(surveyId: string): Promise<Survey> {
     .from('surveys')
     .select('*, questions(*)')
     .eq('id', surveyId)
+    .eq('status', 'published')
     .single()
 
   if (error) throw error
