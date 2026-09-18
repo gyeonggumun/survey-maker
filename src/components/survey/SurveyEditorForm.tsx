@@ -1,5 +1,7 @@
 import { Plus, Save } from 'lucide-react'
+import type { BaseSyntheticEvent } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
+import { getErrorMessage } from '../../lib/errors'
 import { createEmptyQuestion, type SurveyEditorValues } from '../../types/survey'
 import Button from '../common/Button'
 import Input from '../common/Input'
@@ -8,7 +10,8 @@ import QuestionEditor from './QuestionEditor'
 interface SurveyEditorFormProps {
   defaultValues?: SurveyEditorValues
   submitLabel: string
-  onSubmit: (values: SurveyEditorValues) => Promise<void>
+  onSave: (values: SurveyEditorValues) => Promise<void>
+  onPublish?: (values: SurveyEditorValues) => Promise<void>
 }
 
 const initialValues: SurveyEditorValues = {
@@ -20,7 +23,8 @@ const initialValues: SurveyEditorValues = {
 export default function SurveyEditorForm({
   defaultValues = initialValues,
   submitLabel,
-  onSubmit,
+  onSave,
+  onPublish,
 }: SurveyEditorFormProps) {
   const {
     control,
@@ -32,7 +36,7 @@ export default function SurveyEditorForm({
   } = useForm<SurveyEditorValues>({ defaultValues })
   const { fields, append, remove, move } = useFieldArray({ control, name: 'questions' })
 
-  const handleValidSubmit = async (values: SurveyEditorValues) => {
+  const handleValidSubmit = async (values: SurveyEditorValues, event?: BaseSyntheticEvent) => {
     if (values.questions.length === 0) {
       setError('root', { message: '설문에는 질문이 하나 이상 필요합니다.' })
       return
@@ -47,7 +51,18 @@ export default function SurveyEditorForm({
       return
     }
 
-    await onSubmit(values)
+    try {
+      const submitter = (event?.nativeEvent as SubmitEvent | undefined)?.submitter
+      const intent = submitter instanceof HTMLElement ? submitter.dataset.intent : 'save'
+
+      if (intent === 'publish' && onPublish) {
+        await onPublish(values)
+      } else {
+        await onSave(values)
+      }
+    } catch (error) {
+      setError('root', { message: getErrorMessage(error) })
+    }
   }
 
   return (
@@ -113,10 +128,27 @@ export default function SurveyEditorForm({
       )}
 
       <div className="flex justify-end">
-        <Button type="submit" disabled={isSubmitting}>
-          <Save className="mr-1.5 size-4" aria-hidden="true" />
-          {isSubmitting ? '저장 중…' : submitLabel}
-        </Button>
+        <div className="flex flex-wrap justify-end gap-2">
+          <Button
+            type="submit"
+            variant={onPublish ? 'secondary' : 'primary'}
+            disabled={isSubmitting}
+            data-intent="save"
+          >
+            <Save className="mr-1.5 size-4" aria-hidden="true" />
+            {isSubmitting ? '처리 중…' : submitLabel}
+          </Button>
+          {onPublish && (
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              data-intent="publish"
+            >
+              <Save className="mr-1.5 size-4" aria-hidden="true" />
+              {isSubmitting ? '처리 중…' : '저장 후 발행'}
+            </Button>
+          )}
+        </div>
       </div>
     </form>
   )

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import SurveyEditorForm from '../../components/survey/SurveyEditorForm'
 import { getErrorMessage } from '../../lib/errors'
 import { useAuthStore } from '../../stores/authStore'
-import { createSurvey } from '../../services/surveyService'
+import { saveSurvey } from '../../services/surveyService'
 import type { SurveyEditorValues } from '../../types/survey'
 
 export default function SurveyCreatePage() {
@@ -17,7 +17,7 @@ export default function SurveyCreatePage() {
     setError('')
 
     try {
-      const survey = await createSurvey(user.id, values)
+      const survey = await saveSurvey(null, values)
       navigate(`/surveys/${survey.id}/edit`, { replace: true })
     } catch (caughtError) {
       setError(getErrorMessage(caughtError))
@@ -37,7 +37,7 @@ export default function SurveyCreatePage() {
           {error}
         </p>
       )}
-      <SurveyEditorForm submitLabel="임시 저장" onSubmit={handleSubmit} />
+      <SurveyEditorForm submitLabel="임시 저장" onSave={handleSubmit} />
     </div>
   )
 }

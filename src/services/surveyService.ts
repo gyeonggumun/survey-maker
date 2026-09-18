@@ -8,11 +8,10 @@ import type {
   SurveyListItem,
 } from '../types/survey'
 
-function normalizeQuestion(question: EditorQuestion, surveyId: string, order: number) {
+function normalizeQuestion(question: EditorQuestion, order: number) {
   const isText = question.type === 'text'
 
   return {
-    survey_id: surveyId,
     type: question.type,
     title: question.title.trim(),
     options: isText
@@ -73,63 +72,21 @@ export async function getPublishedSurvey(surveyId: string): Promise<Survey> {
   return sortQuestions(data as Survey)
 }
 
-export async function createSurvey(userId: string, values: SurveyEditorValues): Promise<Survey> {
-  const client = requireSupabase()
-  const { data: survey, error: surveyError } = await client
-    .from('surveys')
-    .insert({
-      user_id: userId,
-      title: values.title.trim(),
-      description: values.description.trim(),
-      status: 'draft',
-    })
-    .select()
-    .single()
-
-  if (surveyError) throw surveyError
-
-  const { error: questionError } = await client
-    .from('questions')
-    .insert(values.questions.map((question, index) => normalizeQuestion(question, survey.id, index)))
-
-  if (questionError) {
-    await client.from('surveys').delete().eq('id', survey.id)
-    throw questionError
-  }
-
-  return survey as Survey
-}
-
-export async function updateSurvey(surveyId: string, values: SurveyEditorValues) {
-  const client = requireSupabase()
-  const { error: surveyError } = await client
-    .from('surveys')
-    .update({
-      title: values.title.trim(),
-      description: values.description.trim(),
-    })
-    .eq('id', surveyId)
-
-  if (surveyError) throw surveyError
-
-  const { error: deleteError } = await client.from('questions').delete().eq('survey_id', surveyId)
-  if (deleteError) throw deleteError
-
-  const { error: questionError } = await client
-    .from('questions')
-    .insert(values.questions.map((question, index) => normalizeQuestion(question, surveyId, index)))
-
-  if (questionError) throw questionError
-}
-
-export async function publishSurvey(surveyId: string, userId: string) {
-  const { error } = await requireSupabase()
-    .from('surveys')
-    .update({ status: 'published' })
-    .eq('id', surveyId)
-    .eq('user_id', userId)
+export async function saveSurvey(
+  surveyId: string | null,
+  values: SurveyEditorValues,
+  publish = false,
+): Promise<Survey> {
+  const { data, error } = await requireSupabase().rpc('save_survey', {
+    p_survey_id: surveyId,
+    p_title: values.title.trim(),
+    p_description: values.description.trim(),
+    p_questions: values.questions.map(normalizeQuestion),
+    p_publish: publish,
+  })
 
   if (error) throw error
+  return data as Survey
 }
 
 export async function deleteSurvey(surveyId: string, userId: string) {
@@ -142,24 +99,53 @@ export async function deleteSurvey(surveyId: string, userId: string) {
   if (error) throw error
 }
 
-export async function getSurveyResults(surveyId: string, userId: string) {
-  const client = requireSupabase()
-  const survey = await getOwnedSurvey(surveyId, userId)
-  const [responsesResult, answersResult] = await Promise.all([
-    client
+const PAGE_SIZE = 1_000
+
+async function getAllResponses(surveyId: string): Promise<ResponseRecord[]> {
+  const responses: ResponseRecord[] = []
+
+  for (let from = 0; ; from += PAGE_SIZE) {
+    const { data, error } = await requireSupabase()
       .from('responses')
       .select('*')
       .eq('survey_id', surveyId)
-      .order('submitted_at', { ascending: false }),
-    client.from('answers').select('*').eq('survey_id', surveyId),
-  ])
+      .order('submitted_at', { ascending: false })
+      .range(from, from + PAGE_SIZE - 1)
 
-  if (responsesResult.error) throw responsesResult.error
-  if (answersResult.error) throw answersResult.error
+    if (error) throw error
+    const page = (data ?? []) as ResponseRecord[]
+    responses.push(...page)
+    if (page.length < PAGE_SIZE) return responses
+  }
+}
+
+async function getAllAnswers(surveyId: string): Promise<AnswerRecord[]> {
+  const answers: AnswerRecord[] = []
+
+  for (let from = 0; ; from += PAGE_SIZE) {
+    const { data, error } = await requireSupabase()
+      .from('answers')
+      .select('*')
+      .eq('survey_id', surveyId)
+      .range(from, from + PAGE_SIZE - 1)
+
+    if (error) throw error
+    const page = (data ?? []) as AnswerRecord[]
+    answers.push(...page)
+    if (page.length < PAGE_SIZE) return answers
+  }
+}
+
+export async function getSurveyResults(surveyId: string, userId: string) {
+  const [survey, responses, answers] = await Promise.all([
+    getOwnedSurvey(surveyId, userId),
+    getAllResponses(surveyId),
+    getAllAnswers(surveyId),
+  ])
 
   return {
     survey,
-    responses: (responsesResult.data ?? []) as ResponseRecord[],
-    answers: (answersResult.data ?? []) as AnswerRecord[],
+    responses,
+    answers,
   }
 }

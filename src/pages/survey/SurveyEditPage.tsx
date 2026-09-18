@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react'
-import { ExternalLink, Send } from 'lucide-react'
+import { ExternalLink } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import Button from '../../components/common/Button'
 import EmptyState from '../../components/common/EmptyState'
 import Loading from '../../components/common/Loading'
 import SurveyEditorForm from '../../components/survey/SurveyEditorForm'
 import { getErrorMessage } from '../../lib/errors'
 import { useAuthStore } from '../../stores/authStore'
-import { getOwnedSurvey, publishSurvey, updateSurvey } from '../../services/surveyService'
+import { getOwnedSurvey, saveSurvey } from '../../services/surveyService'
 import { toEditorValues, type Survey, type SurveyEditorValues } from '../../types/survey'
 
 export default function SurveyEditPage() {
@@ -17,7 +16,6 @@ export default function SurveyEditPage() {
   const [survey, setSurvey] = useState<Survey | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
-  const [isPublishing, setIsPublishing] = useState(false)
 
   useEffect(() => {
     if (!id || !user) return
@@ -72,7 +70,7 @@ export default function SurveyEditPage() {
   const handleSave = async (values: SurveyEditorValues) => {
     setError('')
     try {
-      await updateSurvey(survey.id, values)
+      await saveSurvey(survey.id, values)
       navigate('/surveys', { replace: true })
     } catch (caughtError) {
       setError(getErrorMessage(caughtError))
@@ -80,18 +78,16 @@ export default function SurveyEditPage() {
     }
   }
 
-  const handlePublish = async () => {
+  const handlePublish = async (values: SurveyEditorValues) => {
     if (!window.confirm('설문을 발행하면 질문을 수정할 수 없습니다. 계속할까요?')) return
 
-    setIsPublishing(true)
     setError('')
     try {
-      await publishSurvey(survey.id, user.id)
+      await saveSurvey(survey.id, values, true)
       navigate(`/surveys/${survey.id}/results`, { replace: true })
     } catch (caughtError) {
       setError(getErrorMessage(caughtError))
-    } finally {
-      setIsPublishing(false)
+      throw caughtError
     }
   }
 
@@ -112,10 +108,6 @@ export default function SurveyEditPage() {
             <ExternalLink className="mr-1.5 size-4" aria-hidden="true" />
             미리보기
           </Link>
-          <Button type="button" onClick={handlePublish} disabled={isPublishing}>
-            <Send className="mr-1.5 size-4" aria-hidden="true" />
-            {isPublishing ? '발행 중…' : '설문 발행'}
-          </Button>
         </div>
       </div>
 
@@ -128,7 +120,8 @@ export default function SurveyEditPage() {
         key={survey.id}
         defaultValues={toEditorValues(survey)}
         submitLabel="변경 사항 저장"
-        onSubmit={handleSave}
+        onSave={handleSave}
+        onPublish={handlePublish}
       />
     </div>
   )
