@@ -1,14 +1,15 @@
-import { useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { Clipboard, ExternalLink, Users } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import Button from '../../components/common/Button'
 import EmptyState from '../../components/common/EmptyState'
 import Loading from '../../components/common/Loading'
-import ResultChart from '../../components/survey/ResultChart'
 import { getErrorMessage } from '../../lib/errors'
 import { useAuthStore } from '../../stores/authStore'
 import { getSurveyResults } from '../../services/surveyService'
 import type { AnswerRecord, ResponseRecord, Survey } from '../../types/survey'
+
+const ResultChart = lazy(() => import('../../components/survey/ResultChart'))
 
 interface ResultData {
   survey: Survey
@@ -164,7 +165,9 @@ export default function SurveyResultPage() {
               <h2 className="mt-1 text-lg font-bold text-slate-900">{question.title}</h2>
               <p className="mt-2 text-sm text-slate-500">{questionAnswers.length}개의 답변</p>
               <div className="mt-4">
-                <ResultChart data={[...counts].map(([label, count]) => ({ label, count }))} />
+                <Suspense fallback={<div className="h-64 animate-pulse rounded-xl bg-slate-100" />}>
+                  <ResultChart data={[...counts].map(([label, count]) => ({ label, count }))} />
+                </Suspense>
               </div>
             </section>
           )

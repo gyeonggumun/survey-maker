@@ -1,16 +1,19 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom'
+import Loading from './components/common/Loading'
 import Header from './components/layout/Header'
 import ProtectedRoute from './components/layout/ProtectedRoute'
 import { useAuth } from './hooks/useAuth'
-import LoginPage from './pages/auth/LoginPage'
-import SignupPage from './pages/auth/SignupPage'
-import NotFoundPage from './pages/NotFoundPage'
-import SurveyCreatePage from './pages/survey/SurveyCreatePage'
-import SurveyEditPage from './pages/survey/SurveyEditPage'
-import SurveyListPage from './pages/survey/SurveyListPage'
-import SurveyPreviewPage from './pages/survey/SurveyPreviewPage'
-import SurveyResponsePage from './pages/survey/SurveyResponsePage'
-import SurveyResultPage from './pages/survey/SurveyResultPage'
+
+const LoginPage = lazy(() => import('./pages/auth/LoginPage'))
+const SignupPage = lazy(() => import('./pages/auth/SignupPage'))
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
+const SurveyCreatePage = lazy(() => import('./pages/survey/SurveyCreatePage'))
+const SurveyEditPage = lazy(() => import('./pages/survey/SurveyEditPage'))
+const SurveyListPage = lazy(() => import('./pages/survey/SurveyListPage'))
+const SurveyPreviewPage = lazy(() => import('./pages/survey/SurveyPreviewPage'))
+const SurveyResponsePage = lazy(() => import('./pages/survey/SurveyResponsePage'))
+const SurveyResultPage = lazy(() => import('./pages/survey/SurveyResultPage'))
 
 function DashboardLayout() {
   return (
@@ -28,24 +31,26 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/s/:id" element={<SurveyResponsePage />} />
+      <Suspense fallback={<Loading />}>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/s/:id" element={<SurveyResponsePage />} />
 
-        <Route element={<ProtectedRoute />}>
-          <Route element={<DashboardLayout />}>
-            <Route path="/surveys" element={<SurveyListPage />} />
-            <Route path="/surveys/new" element={<SurveyCreatePage />} />
-            <Route path="/surveys/:id/edit" element={<SurveyEditPage />} />
-            <Route path="/surveys/:id/preview" element={<SurveyPreviewPage />} />
-            <Route path="/surveys/:id/results" element={<SurveyResultPage />} />
+          <Route element={<ProtectedRoute />}>
+            <Route element={<DashboardLayout />}>
+              <Route path="/surveys" element={<SurveyListPage />} />
+              <Route path="/surveys/new" element={<SurveyCreatePage />} />
+              <Route path="/surveys/:id/edit" element={<SurveyEditPage />} />
+              <Route path="/surveys/:id/preview" element={<SurveyPreviewPage />} />
+              <Route path="/surveys/:id/results" element={<SurveyResultPage />} />
+            </Route>
           </Route>
-        </Route>
 
-        <Route path="/" element={<Navigate to="/surveys" replace />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+          <Route path="/" element={<Navigate to="/surveys" replace />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   )
 }
