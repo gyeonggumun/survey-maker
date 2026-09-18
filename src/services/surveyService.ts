@@ -1,7 +1,8 @@
 import { requireSupabase } from '../lib/supabase'
 import type {
+  AnswerRecord,
   EditorQuestion,
-  Question,
+  ResponseRecord,
   Survey,
   SurveyEditorValues,
   SurveyListItem,
@@ -141,4 +142,24 @@ export async function deleteSurvey(surveyId: string, userId: string) {
   if (error) throw error
 }
 
-export type { Question }
+export async function getSurveyResults(surveyId: string, userId: string) {
+  const client = requireSupabase()
+  const survey = await getOwnedSurvey(surveyId, userId)
+  const [responsesResult, answersResult] = await Promise.all([
+    client
+      .from('responses')
+      .select('*')
+      .eq('survey_id', surveyId)
+      .order('submitted_at', { ascending: false }),
+    client.from('answers').select('*').eq('survey_id', surveyId),
+  ])
+
+  if (responsesResult.error) throw responsesResult.error
+  if (answersResult.error) throw answersResult.error
+
+  return {
+    survey,
+    responses: (responsesResult.data ?? []) as ResponseRecord[],
+    answers: (answersResult.data ?? []) as AnswerRecord[],
+  }
+}
