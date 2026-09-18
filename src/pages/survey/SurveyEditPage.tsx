@@ -106,11 +106,11 @@ export default function SurveyEditPage() {
         <div className="flex flex-wrap gap-2">
           <Link
             className="inline-flex min-h-10 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-            to={`/s/${survey.id}`}
+            to={`/surveys/${survey.id}/preview`}
             target="_blank"
           >
             <ExternalLink className="mr-1.5 size-4" aria-hidden="true" />
-            응답 화면 보기
+            미리보기
           </Link>
           <Button type="button" onClick={handlePublish} disabled={isPublishing}>
             <Send className="mr-1.5 size-4" aria-hidden="true" />

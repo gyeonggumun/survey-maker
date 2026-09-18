@@ -8,6 +8,7 @@ import NotFoundPage from './pages/NotFoundPage'
 import SurveyCreatePage from './pages/survey/SurveyCreatePage'
 import SurveyEditPage from './pages/survey/SurveyEditPage'
 import SurveyListPage from './pages/survey/SurveyListPage'
+import SurveyPreviewPage from './pages/survey/SurveyPreviewPage'
 import SurveyResponsePage from './pages/survey/SurveyResponsePage'
 import SurveyResultPage from './pages/survey/SurveyResultPage'
 
@@ -37,6 +38,7 @@ export default function App() {
             <Route path="/surveys" element={<SurveyListPage />} />
             <Route path="/surveys/new" element={<SurveyCreatePage />} />
             <Route path="/surveys/:id/edit" element={<SurveyEditPage />} />
+            <Route path="/surveys/:id/preview" element={<SurveyPreviewPage />} />
             <Route path="/surveys/:id/results" element={<SurveyResultPage />} />
           </Route>
         </Route>
