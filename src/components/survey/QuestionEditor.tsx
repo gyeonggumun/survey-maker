@@ -1,5 +1,12 @@
 import { ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react'
-import { useFieldArray, useWatch, type Control, type UseFormRegister, type UseFormSetValue } from 'react-hook-form'
+import {
+  useFieldArray,
+  useWatch,
+  type Control,
+  type FieldErrors,
+  type UseFormRegister,
+  type UseFormSetValue,
+} from 'react-hook-form'
 import { QUESTION_TYPE_LABELS } from '../../constants/questionTypes'
 import type { QuestionType, SurveyEditorValues } from '../../types/survey'
 import Button from '../common/Button'
@@ -9,6 +16,7 @@ interface QuestionEditorProps {
   control: Control<SurveyEditorValues>
   register: UseFormRegister<SurveyEditorValues>
   setValue: UseFormSetValue<SurveyEditorValues>
+  errors?: NonNullable<FieldErrors<SurveyEditorValues>['questions']>[number]
   index: number
   count: number
   onRemove: () => void
@@ -21,6 +29,7 @@ export default function QuestionEditor({
   control,
   register,
   setValue,
+  errors,
   index,
   count,
   onRemove,
@@ -79,10 +88,11 @@ export default function QuestionEditor({
       </div>
 
       <div className="mt-4 grid gap-4">
-        <Input
-          label="질문 내용"
-          placeholder="응답자에게 보여줄 질문을 입력하세요"
-          {...register(`questions.${index}.title`, {
+          <Input
+            label="질문 내용"
+            placeholder="응답자에게 보여줄 질문을 입력하세요"
+            error={errors?.title?.message}
+            {...register(`questions.${index}.title`, {
             required: '질문 내용을 입력하세요.',
             validate: (value) => value.trim().length > 0 || '질문 내용을 입력하세요.',
           })}
@@ -119,18 +129,25 @@ export default function QuestionEditor({
                 선택지 추가
               </Button>
             </div>
-            <div className="mt-3 space-y-2">
-              {optionFields.map((field, optionIndex) => (
-                <div className="flex items-center gap-2" key={field.id}>
-                  <input
-                    className="min-h-10 flex-1 rounded-lg border border-slate-300 bg-white px-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
-                    aria-label={`선택지 ${optionIndex + 1}`}
-                    placeholder={`선택지 ${optionIndex + 1}`}
-                    {...register(`questions.${index}.options.${optionIndex}.value`, {
-                      required: '선택지를 입력하세요.',
-                      validate: (value) => value.trim().length > 0 || '선택지를 입력하세요.',
-                    })}
-                  />
+              <div className="mt-3 space-y-2">
+                {optionFields.map((field, optionIndex) => (
+                  <div className="flex items-center gap-2" key={field.id}>
+                    <div className="min-w-0 flex-1">
+                      <input
+                        className={`min-h-10 w-full rounded-lg border bg-white px-3 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 ${errors?.options?.[optionIndex]?.value ? 'border-rose-500' : 'border-slate-300'}`}
+                        aria-label={`선택지 ${optionIndex + 1}`}
+                        placeholder={`선택지 ${optionIndex + 1}`}
+                        {...register(`questions.${index}.options.${optionIndex}.value`, {
+                          required: '선택지를 입력하세요.',
+                          validate: (value) => value.trim().length > 0 || '선택지를 입력하세요.',
+                        })}
+                      />
+                      {errors?.options?.[optionIndex]?.value?.message && (
+                        <span className="text-sm text-rose-600">
+                          {errors.options[optionIndex]?.value?.message}
+                        </span>
+                      )}
+                    </div>
                   <Button
                     aria-label={`선택지 ${optionIndex + 1} 삭제`}
                     variant="ghost"

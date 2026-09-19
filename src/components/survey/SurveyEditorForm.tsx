@@ -103,6 +103,7 @@ export default function SurveyEditorForm({
             control={control}
             register={register}
             setValue={setValue}
+            errors={errors.questions?.[index]}
             index={index}
             count={fields.length}
             onRemove={() => remove(index)}
