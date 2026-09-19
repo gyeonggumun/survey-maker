@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { Clipboard, ExternalLink, Users } from 'lucide-react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import Button from '../../components/common/Button'
 import EmptyState from '../../components/common/EmptyState'
 import Loading from '../../components/common/Loading'
@@ -28,11 +28,15 @@ function formatDateTime(value: string) {
 
 export default function SurveyResultPage() {
   const { id } = useParams()
+  const location = useLocation()
   const user = useAuthStore((state) => state.user)
   const [data, setData] = useState<ResultData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
+  const [notice, setNotice] = useState(
+    () => (location.state as { notice?: string } | null)?.notice ?? '',
+  )
 
   useEffect(() => {
     if (!id || !user) return
@@ -118,6 +122,15 @@ export default function SurveyResultPage() {
         <p className="rounded-lg bg-rose-50 px-4 py-3 text-sm text-rose-700" role="alert">
           {error}
         </p>
+      )}
+      {notice && (
+        <button
+          className="block w-full rounded-lg bg-emerald-50 px-4 py-3 text-left text-sm text-emerald-700"
+          type="button"
+          onClick={() => setNotice('')}
+        >
+          {notice}
+        </button>
       )}
 
       <div className="space-y-5">

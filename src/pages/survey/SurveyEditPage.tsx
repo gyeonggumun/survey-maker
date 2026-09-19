@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ExternalLink } from 'lucide-react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import EmptyState from '../../components/common/EmptyState'
 import Loading from '../../components/common/Loading'
 import SurveyEditorForm from '../../components/survey/SurveyEditorForm'
@@ -11,11 +11,15 @@ import { toEditorValues, type Survey, type SurveyEditorValues } from '../../type
 
 export default function SurveyEditPage() {
   const { id } = useParams()
+  const location = useLocation()
   const navigate = useNavigate()
   const user = useAuthStore((state) => state.user)
   const [survey, setSurvey] = useState<Survey | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+  const [notice] = useState(
+    () => (location.state as { notice?: string } | null)?.notice ?? '',
+  )
 
   useEffect(() => {
     if (!id || !user) return
@@ -71,7 +75,10 @@ export default function SurveyEditPage() {
     setError('')
     try {
       await saveSurvey(survey.id, values)
-      navigate('/surveys', { replace: true })
+      navigate('/surveys', {
+        replace: true,
+        state: { notice: '설문 변경 사항을 저장했습니다.' },
+      })
     } catch (caughtError) {
       setError(getErrorMessage(caughtError))
       throw caughtError
@@ -84,7 +91,10 @@ export default function SurveyEditPage() {
     setError('')
     try {
       await saveSurvey(survey.id, values, true)
-      navigate(`/surveys/${survey.id}/results`, { replace: true })
+      navigate(`/surveys/${survey.id}/results`, {
+        replace: true,
+        state: { notice: '설문을 발행했습니다. 이제 공유 링크로 응답을 받을 수 있습니다.' },
+      })
     } catch (caughtError) {
       setError(getErrorMessage(caughtError))
       throw caughtError
@@ -114,6 +124,11 @@ export default function SurveyEditPage() {
       {error && (
         <p className="rounded-lg bg-rose-50 px-4 py-3 text-sm text-rose-700" role="alert">
           {error}
+        </p>
+      )}
+      {notice && (
+        <p className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-700" role="status">
+          {notice}
         </p>
       )}
       <SurveyEditorForm

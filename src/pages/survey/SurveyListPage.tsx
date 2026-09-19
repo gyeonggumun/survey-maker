@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { BarChart3, Clipboard, ExternalLink, FilePlus2, Pencil, Trash2 } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import Button from '../../components/common/Button'
 import EmptyState from '../../components/common/EmptyState'
 import Loading from '../../components/common/Loading'
@@ -18,12 +18,16 @@ function formatDate(value: string) {
 }
 
 export default function SurveyListPage() {
+  const location = useLocation()
   const user = useAuthStore((state) => state.user)
   const [surveys, setSurveys] = useState<SurveyListItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
   const [pendingId, setPendingId] = useState('')
   const [copiedId, setCopiedId] = useState('')
+  const [notice, setNotice] = useState(
+    () => (location.state as { notice?: string } | null)?.notice ?? '',
+  )
 
   useEffect(() => {
     if (!user) return
@@ -96,6 +100,15 @@ export default function SurveyListPage() {
         <p className="rounded-lg bg-rose-50 px-4 py-3 text-sm text-rose-700" role="alert">
           {error}
         </p>
+      )}
+      {notice && (
+        <button
+          className="block w-full rounded-lg bg-emerald-50 px-4 py-3 text-left text-sm text-emerald-700"
+          type="button"
+          onClick={() => setNotice('')}
+        >
+          {notice}
+        </button>
       )}
 
       {isLoading ? (

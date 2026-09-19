@@ -18,7 +18,10 @@ export default function SurveyCreatePage() {
 
     try {
       const survey = await saveSurvey(null, values)
-      navigate(`/surveys/${survey.id}/edit`, { replace: true })
+      navigate(`/surveys/${survey.id}/edit`, {
+        replace: true,
+        state: { notice: '설문이 임시 저장되었습니다.' },
+      })
     } catch (caughtError) {
       setError(getErrorMessage(caughtError))
       throw caughtError
