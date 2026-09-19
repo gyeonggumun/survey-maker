@@ -102,7 +102,7 @@ export default function SurveyResultPage() {
         </div>
         {data.survey.status === 'published' && (
           <div className="grid gap-2 sm:flex sm:flex-wrap">
-            <Button className="w-full bg-white text-indigo-700 hover:bg-indigo-50 sm:w-auto" onClick={() => void handleCopy()}>
+            <Button variant="light" className="w-full sm:w-auto" onClick={() => void handleCopy()}>
               <Clipboard className="mr-1.5 size-4" aria-hidden="true" />
               {copied ? '복사됨' : '공유 링크 복사'}
             </Button>

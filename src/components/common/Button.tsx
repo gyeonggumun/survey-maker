@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes } from 'react'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger' | 'ghost'
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'light'
 }
 
 const styles = {
@@ -10,6 +10,7 @@ const styles = {
     'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 focus-visible:outline-slate-500',
   danger: 'bg-rose-600 text-white hover:bg-rose-700 focus-visible:outline-rose-600',
   ghost: 'text-slate-600 hover:bg-slate-100 focus-visible:outline-slate-500',
+  light: 'bg-white text-indigo-700 hover:bg-indigo-50 focus-visible:outline-white',
 }
 
 export default function Button({
