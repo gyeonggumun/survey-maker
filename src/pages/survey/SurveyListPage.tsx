@@ -1,5 +1,14 @@
 import { useEffect, useState } from 'react'
-import { BarChart3, Clipboard, ExternalLink, FilePlus2, Pencil, Trash2 } from 'lucide-react'
+import {
+  BarChart3,
+  Clipboard,
+  ClipboardList,
+  ExternalLink,
+  FilePlus2,
+  MessageSquareText,
+  Pencil,
+  Trash2,
+} from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import Button from '../../components/common/Button'
 import EmptyState from '../../components/common/EmptyState'
@@ -15,6 +24,24 @@ function formatDate(value: string) {
     month: 'short',
     day: 'numeric',
   }).format(new Date(value))
+}
+
+interface DashboardStatProps {
+  icon: typeof ClipboardList
+  label: string
+  value: number
+}
+
+function DashboardStat({ icon: Icon, label, value }: DashboardStatProps) {
+  return (
+    <div className="rounded-2xl bg-white/10 p-4 ring-1 ring-white/10 backdrop-blur-sm">
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-xs font-medium text-indigo-100">{label}</span>
+        <Icon className="size-4 text-indigo-200" aria-hidden="true" />
+      </div>
+      <p className="mt-2 text-2xl font-bold tracking-tight">{value}</p>
+    </div>
+  )
 }
 
 export default function SurveyListPage() {
@@ -54,6 +81,9 @@ export default function SurveyListPage() {
 
   if (!user) return null
 
+  const publishedCount = surveys.filter((survey) => survey.status === 'published').length
+  const responseCount = surveys.reduce((total, survey) => total + survey.responseCount, 0)
+
   const handleDelete = async (survey: SurveyListItem) => {
     if (!window.confirm(`'${survey.title}' 설문을 삭제할까요? 응답도 함께 삭제됩니다.`)) return
 
@@ -81,20 +111,30 @@ export default function SurveyListPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-sm font-semibold text-indigo-600">내 작업 공간</p>
-          <h1 className="mt-1 text-2xl font-bold text-slate-900">내 설문</h1>
-          <p className="mt-2 text-sm text-slate-500">설문을 만들고, 발행하고, 결과를 확인하세요.</p>
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-indigo-700 to-slate-900 p-5 text-white shadow-xl shadow-indigo-200/50 sm:p-8">
+        <div className="pointer-events-none absolute -right-16 -top-20 size-64 rounded-full bg-white/10 blur-2xl" />
+        <div className="relative flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-sm font-semibold text-indigo-200">내 작업 공간</p>
+            <h1 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">내 설문</h1>
+            <p className="mt-3 max-w-lg text-sm leading-6 text-indigo-100">
+              설문을 만들고, 발행하고, 응답의 흐름을 한눈에 확인하세요.
+            </p>
+          </div>
+          <Link
+            className="inline-flex min-h-11 items-center justify-center rounded-xl bg-white px-4 py-2 text-sm font-bold text-indigo-700 shadow-lg shadow-indigo-950/20 transition hover:bg-indigo-50"
+            to="/surveys/new"
+          >
+            <FilePlus2 className="mr-1.5 size-4" aria-hidden="true" />
+            새 설문 만들기
+          </Link>
         </div>
-        <Link
-          className="inline-flex min-h-10 items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700"
-          to="/surveys/new"
-        >
-          <FilePlus2 className="mr-1.5 size-4" aria-hidden="true" />
-          새 설문 만들기
-        </Link>
-      </div>
+        <div className="relative mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <DashboardStat icon={ClipboardList} label="전체 설문" value={surveys.length} />
+          <DashboardStat icon={BarChart3} label="발행된 설문" value={publishedCount} />
+          <DashboardStat icon={MessageSquareText} label="전체 응답" value={responseCount} />
+        </div>
+      </section>
 
       {error && (
         <p className="rounded-lg bg-rose-50 px-4 py-3 text-sm text-rose-700" role="alert">
@@ -122,7 +162,7 @@ export default function SurveyListPage() {
       ) : (
         <ul className="grid gap-4 md:grid-cols-2">
           {surveys.map((survey) => (
-            <li className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm" key={survey.id}>
+            <li className="group rounded-3xl border border-slate-200/80 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-100/60 sm:p-6" key={survey.id}>
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <h2 className="truncate text-lg font-bold text-slate-900">{survey.title}</h2>
@@ -152,7 +192,7 @@ export default function SurveyListPage() {
                 </div>
               </dl>
 
-              <div className="mt-4 flex flex-wrap gap-2">
+              <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-4">
                 {survey.status === 'draft' ? (
                   <Link
                     className="inline-flex min-h-9 items-center rounded-lg border border-slate-300 px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
