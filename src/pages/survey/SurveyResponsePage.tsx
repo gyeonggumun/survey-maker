@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { CheckCircle2 } from 'lucide-react'
-import { useParams } from 'react-router-dom'
+import { ArrowLeft, CheckCircle2 } from 'lucide-react'
+import { Link, useParams } from 'react-router-dom'
 import EmptyState from '../../components/common/EmptyState'
 import Loading from '../../components/common/Loading'
 import SurveyForm from '../../components/survey/SurveyForm'
@@ -60,6 +60,13 @@ export default function SurveyResponsePage() {
           <CheckCircle2 className="mx-auto size-12 text-emerald-600" aria-hidden="true" />
           <h1 className="mt-4 text-2xl font-bold text-slate-900">응답을 제출했습니다.</h1>
           <p className="mt-2 text-sm leading-6 text-slate-500">{survey.title}에 참여해주셔서 감사합니다.</p>
+          <Link
+            className="mt-6 inline-flex min-h-10 items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700"
+            to="/login"
+          >
+            <ArrowLeft className="mr-1.5 size-4" aria-hidden="true" />
+            설문 제작소로 이동
+          </Link>
         </section>
       </main>
     )
