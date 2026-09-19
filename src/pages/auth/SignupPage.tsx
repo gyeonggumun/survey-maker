@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
+import AuthLayout from '../../components/layout/AuthLayout'
 import Button from '../../components/common/Button'
 import Input from '../../components/common/Input'
 import { getErrorMessage } from '../../lib/errors'
@@ -44,17 +45,22 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <form
-        className="w-full max-w-md space-y-6 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <p className="text-sm font-semibold text-indigo-600">설문 제작소</p>
-        <h1 className="mt-2 text-2xl font-bold text-slate-900">회원가입</h1>
-        <p className="text-sm leading-6 text-slate-500">설문을 만들 계정을 생성하세요.</p>
-
+    <AuthLayout
+      eyebrow="Start collecting insights"
+      title="회원가입"
+      description="설문을 만들 계정을 생성하세요."
+      footer={
+        <p className="text-center text-sm text-slate-600">
+          이미 계정이 있나요?{' '}
+          <Link className="font-semibold text-indigo-700 hover:text-indigo-800" to="/login">
+            로그인
+          </Link>
+        </p>
+      }
+    >
+      <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
         {!isSupabaseConfigured && (
-          <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm leading-5 text-amber-800">
+          <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm leading-5 text-amber-800">
             Supabase 환경 변수를 설정하면 회원가입할 수 있습니다.
           </p>
         )}
@@ -98,27 +104,20 @@ export default function SignupPage() {
         />
 
         {submitError && (
-          <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700" role="alert">
+          <p className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2.5 text-sm text-rose-700" role="alert">
             {submitError}
           </p>
         )}
         {successMessage && (
-          <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700" role="status">
+          <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm text-emerald-700" role="status">
             {successMessage}
           </p>
         )}
 
-        <Button className="w-full" type="submit" disabled={isSubmitting || !isSupabaseConfigured}>
+        <Button className="mt-2 w-full" type="submit" disabled={isSubmitting || !isSupabaseConfigured}>
           {isSubmitting ? '가입 중…' : '회원가입'}
         </Button>
-
-        <p className="text-center text-sm text-slate-600">
-          이미 계정이 있나요?{' '}
-          <Link className="font-semibold text-indigo-700" to="/login">
-            로그인
-          </Link>
-        </p>
       </form>
-    </main>
+    </AuthLayout>
   )
 }

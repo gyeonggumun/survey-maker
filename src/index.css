@@ -17,6 +17,13 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
+  background: #f8fafc;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+::selection {
+  background: #c7d2fe;
+  color: #312e81;
 }
 
 button,

@@ -17,9 +17,9 @@ const SurveyResultPage = lazy(() => import('./pages/survey/SurveyResultPage'))
 
 function DashboardLayout() {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_#eef2ff_0,_#f8fafc_38rem)]">
       <Header />
-      <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6">
+      <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:py-10">
         <Outlet />
       </main>
     </div>
