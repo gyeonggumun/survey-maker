@@ -91,7 +91,7 @@ export default function SurveyResultPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 rounded-2xl bg-indigo-600 p-6 text-white shadow-sm sm:flex-row sm:items-end sm:justify-between sm:p-8">
+      <div className="flex flex-col gap-5 rounded-3xl bg-indigo-600 p-5 text-white shadow-xl shadow-indigo-200/50 sm:flex-row sm:items-end sm:justify-between sm:p-8">
         <div>
           <p className="text-sm font-semibold text-indigo-100">응답 결과</p>
           <h1 className="mt-1 text-2xl font-bold">{data.survey.title}</h1>
@@ -101,8 +101,8 @@ export default function SurveyResultPage() {
           </p>
         </div>
         {data.survey.status === 'published' && (
-          <div className="flex flex-wrap gap-2">
-            <Button className="bg-white text-indigo-700 hover:bg-indigo-50" onClick={() => void handleCopy()}>
+          <div className="grid gap-2 sm:flex sm:flex-wrap">
+            <Button className="w-full bg-white text-indigo-700 hover:bg-indigo-50 sm:w-auto" onClick={() => void handleCopy()}>
               <Clipboard className="mr-1.5 size-4" aria-hidden="true" />
               {copied ? '복사됨' : '공유 링크 복사'}
             </Button>
@@ -139,7 +139,7 @@ export default function SurveyResultPage() {
 
           if (question.type === 'text') {
             return (
-              <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm" key={question.id}>
+              <section className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6" key={question.id}>
                 <p className="text-sm font-semibold text-indigo-600">질문 {index + 1} · 주관식</p>
                 <h2 className="mt-1 text-lg font-bold text-slate-900">{question.title}</h2>
                 {questionAnswers.length === 0 ? (
@@ -171,7 +171,7 @@ export default function SurveyResultPage() {
           }
 
           return (
-            <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm" key={question.id}>
+            <section className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6" key={question.id}>
               <p className="text-sm font-semibold text-indigo-600">
                 질문 {index + 1} · {question.type === 'single_choice' ? '객관식' : '복수 선택'}
               </p>

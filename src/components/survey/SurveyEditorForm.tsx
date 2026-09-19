@@ -128,9 +128,10 @@ export default function SurveyEditorForm({
         </p>
       )}
 
-      <div className="flex justify-end">
-        <div className="flex flex-wrap justify-end gap-2">
+      <div className="sticky bottom-3 z-20 -mx-1 rounded-2xl border border-slate-200 bg-white/90 p-3 shadow-xl shadow-slate-300/30 backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none sm:backdrop-blur-none">
+        <div className="grid w-full gap-2 sm:flex sm:w-auto sm:flex-wrap sm:justify-end">
           <Button
+            className="w-full sm:w-auto"
             type="submit"
             variant={onPublish ? 'secondary' : 'primary'}
             disabled={isSubmitting}
@@ -141,6 +142,7 @@ export default function SurveyEditorForm({
           </Button>
           {onPublish && (
             <Button
+              className="w-full sm:w-auto"
               type="submit"
               disabled={isSubmitting}
               data-intent="publish"

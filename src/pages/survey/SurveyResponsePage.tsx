@@ -80,11 +80,14 @@ export default function SurveyResponsePage() {
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-10 sm:py-16">
       <div className="mx-auto max-w-2xl">
-        <header className="mb-6 rounded-2xl bg-indigo-600 p-6 text-white shadow-sm sm:p-8">
+        <header className="relative mb-6 overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 to-indigo-800 p-5 text-white shadow-xl shadow-indigo-200/50 sm:p-8">
+          <div className="pointer-events-none absolute -right-12 -top-16 size-48 rounded-full bg-white/10 blur-2xl" />
+          <div className="relative">
           <p className="text-sm font-semibold text-indigo-100">설문조사</p>
           <h1 className="mt-2 text-2xl font-bold sm:text-3xl">{survey.title}</h1>
           {survey.description && <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-indigo-50">{survey.description}</p>}
           <p className="mt-5 text-xs text-indigo-100"><span className="text-rose-200">*</span> 필수 응답 항목</p>
+          </div>
         </header>
         <SurveyForm survey={survey} onSubmit={handleSubmit} />
       </div>
