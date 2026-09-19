@@ -250,22 +250,29 @@ Vercel 환경 변수에는 다음 두 값을 Development, Preview, Production �
 
 기능별로 나누어 한글 커밋 메시지로 커밋하고 `main`에 푸시했습니다.
 
-- `b36f2e9 chore(init): React Vite 프로젝트 초기 구성`
-- `6722bd1 feat(shell): 라우팅과 공통 UI 기반 구성`
-- `bc81923 feat(auth): 이메일 회원가입과 로그인 구현`
-- `e2ed74b feat(database): 설문 스키마와 RLS 정책 추가`
-- `b9b79d1 feat(survey): 설문 도메인 타입과 데이터 서비스 추가`
-- `694dec3 feat(list): 내 설문 목록과 관리 기능 추가`
-- `3c8c90d feat(response): 공개 설문 응답과 제출 기능 구현`
-- `c00cdf4 feat(results): 설문 응답 결과와 차트 구현`
-- `965ead5 feat(preview): 설문 응답 화면 미리보기 추가`
-- `2ce7556 perf(bundle): 화면별 코드 분할 적용`
-- `c79e31d fix(auth): 이메일 인증 리디렉션 설정`
-- `7a17c3c fix(survey): 원자적 저장과 발행 처리 적용`
-- `54d5dd7 docs(deploy): Supabase와 Vercel 배포 절차 추가`
-- `7a55dd5 fix(form): 질문별 검증 오류 표시`
-- `cb53585 feat(response): 응답 완료 이동 경로 추가`
-- `e0efc50 feat(feedback): 저장과 발행 결과 안내 추가`
+- `9ff4c67 chore(init): React Vite 프로젝트 초기 구성`
+- `c7b000e feat(shell): 라우팅과 공통 UI 기반 구성`
+- `9f39d8d feat(auth): 이메일 회원가입과 로그인 구현`
+- `cdebd44 feat(database): 설문 스키마와 RLS 정책 추가`
+- `94a611c feat(survey): 설문 도메인 타입과 데이터 서비스 추가`
+- `511c355 feat(editor): 설문 작성과 편집 폼 구현`
+- `408e4e9 feat(list): 내 설문 목록과 관리 기능 추가`
+- `5af5ea4 feat(response): 공개 설문 응답과 제출 기능 구현`
+- `36607a3 feat(results): 설문 응답 결과와 차트 구현`
+- `b5ea945 feat(preview): 설문 응답 화면 미리보기 추가`
+- `46bbd39 perf(bundle): 화면별 코드 분할 적용`
+- `a9f4229 fix(auth): 이메일 인증 리디렉션 설정`
+- `562b537 fix(survey): 원자적 저장과 발행 처리 적용`
+- `9ae15ec docs(deploy): Supabase와 Vercel 배포 절차 추가`
+- `87a3364 fix(form): 질문별 검증 오류 표시`
+- `5f78be0 feat(response): 응답 완료 이동 경로 추가`
+- `a799804 feat(feedback): 저장과 발행 결과 안내 추가`
+- `ded9e1c docs(handoff): 프로젝트 인수인계 문서 정리`
+- `edb6b76 style(layout): 반응형 인증과 앱 쉘 개선`
+- `df7d115 style(dashboard): 반응형 대시보드 카드 개선`
+- `8300697 style(survey): 모바일 설문 화면 반응형 개선`
+- `1ebebad docs(handoff): 반응형 디자인 변경 기록`
+- `36ea61c fix(ui): 공유 링크 버튼 글자 색상 수정`
 
 ## 9. UI·반응형 디자인
 
